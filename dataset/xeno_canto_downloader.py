@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 logger.propagate = False
 
-file_handler = logging.FileHandler(os.path.join(OUTPUT_DIR, 'xc_downloader.log'), encoding='utf-8')
+file_handler = logging.FileHandler(os.path.join(OUTPUT_DIR, 'xc_downloader.log'), encoding='utf-8', mode='w')
 file_handler.setLevel(logging.INFO)
 file_handler.setFormatter(logging.Formatter('%(asctime)s | %(levelname)s :: %(message)s'))
 logger.addHandler(file_handler)
