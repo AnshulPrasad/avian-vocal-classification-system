@@ -6,16 +6,21 @@ import logging
 
 OUTPUT_DIR = 'xc'
 API_KEY = os.getenv('XENO_CANTO_API_KEY')
+if not API_KEY:
+    raise EnvironmentError("XENO_CANTO_API_KEY environment variable is not set.")
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_DIR = os.path.join(BASE_DIR, 'xc')
+
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+logger.propagate = False
 
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-file_handler = logging.FileHandler(f'{OUTPUT_DIR}/xc_downloader.log', encoding='utf-8')
+file_handler = logging.FileHandler(os.path.join(OUTPUT_DIR, 'xc_downloader.log'), encoding='utf-8')
 file_handler.setLevel(logging.INFO)
-file_handler.setFormatter(logging.Formatter(
-    '%(asctime)s | %(name)s | %(levelname)s :: %(message)s'
-))
+file_handler.setFormatter(logging.Formatter('%(asctime)s | %(levelname)s :: %(message)s'))
 logger.addHandler(file_handler)
 
 class Species:
@@ -98,6 +103,11 @@ class Species:
     def download_audio(self, metadata):
         try:
             file_name = f"{self.english_name}_{metadata['id']}.mp3"
+
+            if os.path.isfile(f"{OUTPUT_DIR}/{self.english_name}_mp3/{file_name}"):
+                logger.info("File %s already exists", file_name)
+                return
+
             response = requests.get(metadata['file'], stream=True, timeout=30)  # download
             with open(f"{OUTPUT_DIR}/{self.english_name}_mp3/{file_name}", 'wb') as f:  # save
                 f.write(response.content)
