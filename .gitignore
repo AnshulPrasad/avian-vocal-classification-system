@@ -1,5 +1,5 @@
 .venv
-dataset/xc
+xc/
 .idea
 pyproject.toml
 uv.lock
