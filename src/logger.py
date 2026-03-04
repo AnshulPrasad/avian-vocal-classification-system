@@ -16,7 +16,7 @@ def get_logger(name: str, log_file: str) -> logging.Logger:
     logger.propagate = False
 
     if not logger.handlers:
-        handler = FlushFileHandler(LOG_PATH, encoding='utf-8', mode='a')
+        handler = FlushFileHandler(LOG_PATH, encoding='utf-8', mode='w')
         handler.setFormatter(logging.Formatter(
             '%(asctime)s | %(name)s | %(levelname)s :: %(message)s'
         ))
