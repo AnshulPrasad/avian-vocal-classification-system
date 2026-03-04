@@ -18,7 +18,9 @@ SPECIES_LIST = [(s['scientific_name'], s['common_name']) for s in config['specie
 def download():
     for sci_name, common_name in SPECIES_LIST:
         try:
-            Species(sci_name).download()
+            obj = Species(sci_name)
+            obj.download()
+            obj.write_csv()
         except ValueError as e:
             logger.warning("Skipping %s: %s", common_name, e)
         except Exception as e:
