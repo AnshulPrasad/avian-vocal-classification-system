@@ -1,6 +1,8 @@
 import librosa
 import soundfile as sf
-import numpy as np
+
+from logger import get_logger
+logger = get_logger(__name__, 'preprocess.log')
 
 # Responsibilities:
 # - Resample MP3s to 22050 Hz
