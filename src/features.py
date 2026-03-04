@@ -1,10 +1,9 @@
 import librosa
 import numpy as np
-from preprocess import Preprocessor
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-import shutil
-from pathlib import Path
+
+from logger import get_logger
+logger = get_logger(__name__, 'features.log')
 
 # Responsibilities:
 # - Generate mel spectrograms from processed WAVs
