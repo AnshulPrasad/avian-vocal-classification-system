@@ -30,7 +30,6 @@ class FeatureExtractor ():
         return mel_db
 
     def save_spectrogram(self, spectrogram, path, hop_length=512, x_axis="time", y_axis="mel"):
-        np.save(path.with_suffix('.npy'), spectrogram)
         plt.figure(figsize=(8,3))
         librosa.display.specshow(spectrogram, sr=22050, hop_length=hop_length, x_axis=x_axis, y_axis=y_axis)
         plt.colorbar(format='%+2.0f dB')
