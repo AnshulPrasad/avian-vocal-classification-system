@@ -33,23 +33,27 @@ def download():
 
 def preprocess():
     logger.info("Preprocessing data")
-    for species_folder in Path('../data/raw').rglob('*'):
-        for audio_path in Path(species_folder).rglob('*.mp3'):
-            try:
-                audio, sr = librosa.load(audio_path, sr=22050)
-                obj = Preprocessor(audio, sr)
-                resampled = obj.resample_audio(sr)
-                monoed = obj.to_mono(resampled)
-                trimed = obj.trim_silence(monoed)
-                chunks = obj.chunk_audio(trimed, sr, 5)
-                for i, chunk in enumerate(chunks):
-                    output_path = (Path('../data/processed') / f"{audio_path.stem}_chunk{i}").with_suffix(".wav")
-                    obj.save_audio(chunk, output_path, sr=22050)
-                    logger.info("Saved %s", output_path)
-                del obj
-                logger.info("Prerocessed %s", audio_path)
-            except Exception as e:
-                logger.error("Skipping %s: %s", audio_path, e)
+    for species_folder in sorted(Path('../data/raw').iterdir()):
+        if species_folder.is_dir(): # do not pick .csv files in the same folder
+            for audio_path in Path(species_folder).rglob('*.mp3'):
+                try:
+                    audio, sr = librosa.load(audio_path, sr=22050)
+                    obj = Preprocessor(audio, sr)
+                    resampled = obj.resample_audio(sr)
+                    monoed = obj.to_mono(resampled)
+                    trimed = obj.trim_silence(monoed)
+                    chunks = obj.chunk_audio(trimed, sr, 5)
+                    folder_path = Path(f"../data/processed/{'_'.join(species_folder.stem.split('_')[:-1])}_wav")
+                    folder_path.mkdir(parents=True, exist_ok=True)
+                    for i, chunk in enumerate(chunks):
+                        file_path =  Path(f"{audio_path.stem}_chunk{i}").with_suffix(".wav")
+                        output_path = folder_path / file_path
+                        obj.save_audio(chunk, output_path, sr=22050)
+                        logger.info("Saved %s", output_path)
+                    del obj
+                    logger.info("Prerocessed %s", audio_path)
+                except Exception as e:
+                    logger.error("Skipping %s: %s", audio_path, e)
 
 def feature_extraction():
     logger.info("Feature extraction")
