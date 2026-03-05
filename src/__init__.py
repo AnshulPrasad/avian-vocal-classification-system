@@ -26,7 +26,6 @@ def download():
         try:
             obj = Species(sci_name)
             obj.download()
-            obj.write_csv()
         except ValueError as e:
             logger.warning("Skipping %s: %s", common_name, e)
         except Exception as e:
