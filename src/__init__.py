@@ -72,10 +72,10 @@ def feature_extraction():
                     obj.save_spectrogram(mel_db, output_path)
                     logger.info("Saved %s", output_path)
 
-            del obj
-            logger.info("Extracted %s", processed_audio_path)
-        except Exception as e:
-            logger.error("Skipping %s: %s", processed_audio_path, e)
+                del obj
+                logger.info("Extracted %s", audio_path)
+            except Exception as e:
+                logger.error("Skipping %s: %s", audio_path, e)
 
 def split_dataset(species_dir, output_dir, splits=(0.7, 0.15, 0.15)):
     files = list(Path(species_dir).rglob("*.png"))  # mel spectrogram images
