@@ -7,6 +7,8 @@ from torch.utils.data import Dataset
 from torchvision import transforms
 from PIL import Image
 from pathlib import Path
+from logger import get_logger
+logger = get_logger(__name__, 'dataset.log')
 
 class BirdSoundDataset(Dataset):
     def __init__(self, root_dir, split='train', transform=None):
