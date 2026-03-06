@@ -31,13 +31,16 @@ class Evaluator:
         logger.info('Prepared classification report')
 
     def confusion_matrix(self):
+        logger.info('Preparing confusion matrix...')
         cm = confusion_matrix(self.all_labels, self.all_preds)
         plt.figure(figsize=(12, 10))
         sns.heatmap(cm, annot=True, fmt='d', xticklabels=self.present_names, yticklabels=self.present_names)
         Path('../outputs').mkdir(parents=True, exist_ok=True)
         plt.savefig('../outputs/confusion_matrix.png')
+        logger.info('Prepared confusion matrix')
 
     def evaluate(self):
+        logger.info("Evaluating...")
         self.model.eval()
         with torch.no_grad():
             for images, labels in self.test_loader:
