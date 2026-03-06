@@ -135,6 +135,7 @@ if __name__ == "__main__":
     val_loader, val_images, val_labels = dataset('val')
     test_loader, test_images, test_labels = dataset('test')
     model = model()
+    split_dataset('../data/spectrograms', '../data/splited')
     train_loader, train_dataset = dataset('train')
     val_loader, _ = dataset('val')
     test_loader, _ = dataset('test')
