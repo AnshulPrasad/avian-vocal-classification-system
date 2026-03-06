@@ -13,9 +13,8 @@ logger = get_logger(__name__, 'dataset.log')
 class BirdSoundDataset(Dataset):
     def __init__(self, root_dir, split='train', transform=None):
         self.root_dir = Path(root_dir) / split
-        self.classes = sorted([d.name for d in self.root_dir.iterdir()])
-        self.class_to_idx = {c:i for i, c in enumerate(self.classes)}
-        self.files = list(self.root_dir.glob('*.png'))
+        self.files = sorted(self.root_dir.rglob('*.png'))
+        self. labels = self.labels_int()
         self.transform = transform or transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
