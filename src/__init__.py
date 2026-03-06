@@ -11,7 +11,7 @@ from download import Species
 from preprocess import Preprocessor
 from features import FeatureExtractor
 from dataset import BirdSoundDataset
-from model import build_model
+from model import Model
 from train import Train
 from evaluate import Evaluator
 from predict import Predictor
