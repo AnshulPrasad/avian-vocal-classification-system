@@ -22,8 +22,6 @@ class BirdSoundDataset(Dataset):
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5], std=[0.5])
         ])
-        logger.info("Total files(%s): %d", split, len(self.files))
-        logger.info("Total labels(%s): %d", split, len(self.labels))
 
     def load_all_metadata(self):
         df = pd.concat(
