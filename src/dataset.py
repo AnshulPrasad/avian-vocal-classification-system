@@ -30,6 +30,9 @@ class BirdSoundDataset(Dataset):
         df['id'] = df['id'].astype(str)
         return df.set_index('id')['label']  # id → int label
 
+    def labels_int(self):
+        ids = [file.stem.split('_')[-3] for file in self.files]  # extract all IDs at once
+        return self.load_all_metadata().reindex(ids, fill_value='None').tolist()
 
     def __len__(self):
         return len(self.files)
