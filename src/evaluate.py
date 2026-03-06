@@ -10,10 +10,9 @@ import seaborn as sns
 import torch
 
 class Evaluator:
-    def __init__(self, model, test_loader, class_names):
-        self.model = model
+    def __init__(self, test_loader, num_classes):
         self.test_loader = test_loader
-        self.class_names = class_names
+        self.class_names = list(range(num_classes))
         self.all_preds = []
         self.all_labels = []
 
