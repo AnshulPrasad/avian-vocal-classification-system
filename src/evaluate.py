@@ -23,6 +23,7 @@ class Evaluator:
     def classify_report(self):
         # Classification report
         print(classification_report(self.all_labels, self.all_preds, target_names=self.class_names))
+        logger.info(classification_report(self.all_labels, self.all_preds, target_names=self.present_names))
 
     def confusion_matrix(self):
         cm = confusion_matrix(self.all_labels, self.all_preds)
