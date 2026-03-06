@@ -112,9 +112,8 @@ def train(model, train_loader, val_loader):
     obj = Train(model, train_loader, val_loader)
     obj.train()
 
-def evaluate(model, test_loader):
-    class_names = SPECIES_LIST.keys()
-    obj = Evaluator(model, test_loader, class_names)
+def evaluate(test_loader, num_classes):
+    obj = Evaluator(test_loader, num_classes)
     obj.evaluate()
 
 def predict():
