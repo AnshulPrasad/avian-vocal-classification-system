@@ -138,7 +138,6 @@ if __name__ == "__main__":
     train_loader, train_dataset = dataset('train')
     val_loader, _ = dataset('val')
     test_loader, _ = dataset('test')
-    model = model(max(set(train_dataset.labels))) # num_classes from train dataset
+    model = model(train_dataset.num_classes) # num_classes from train dataset
     train(model, train_loader, val_loader)
-    evaluate(model, test_loader)
-    predict()
+    evaluate(test_loader, train_dataset.num_classes) # label encoding is same for all sets (train, val, test)
