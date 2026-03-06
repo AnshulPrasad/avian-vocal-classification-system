@@ -95,9 +95,8 @@ def split_dataset(species_dir, output_dir, splits=(0.7, 0.15, 0.15)):
             shutil.rmtree(output_path)
         output_path.mkdir(parents=True, exist_ok=True)
         for f in split_files:
-            dest = Path(output_dir) / split_name / f.name
-            dest.touch()
-            shutil.copy(f, dest)
+            file_path = output_path / f.name
+            shutil.copy(f, file_path)
 
 def dataset(split):
     obj = BirdSoundDataset('../data/spectrograms', split=split)
