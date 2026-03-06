@@ -43,7 +43,6 @@ class Train:
                 preds = self.model(images).argmax(dim=1)
                 correct += (preds == labels).sum().item()
                 total += labels.size(0)
-
         val_acc = correct / total
         logger.info("Epoch %d | Val Acc: %.4f", epoch + 1, val_acc)
         logger.info("Validated epoch: %d", epoch)
@@ -60,8 +59,7 @@ class Train:
     def train(self):
         logger.info("Training...")
         for epoch in range(self.epochs):
-            self.train_one_epoch(epoch) # --- Training ---
-            val_acc = self.validate_one_epoch(epoch) # --- Validation ---
-            self.save_best_model(val_acc, self.best_val_acc) # Save best model
-
+            self.train_one_epoch(epoch) # Training
+            val_acc = self.validate_one_epoch(epoch) # Validation
+            self.save_best_model(val_acc) # Save best model
         logger.info("Trained")
