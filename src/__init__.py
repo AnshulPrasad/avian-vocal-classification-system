@@ -48,6 +48,9 @@ def preprocess():
                     for i, chunk in enumerate(chunks):
                         file_path =  Path(f"{audio_path.stem}_chunk{i}").with_suffix(".wav")
                         output_path = folder_path / file_path
+                        if output_path.exists():
+                            logger.info("Already exist: %s", output_path)
+                            continue
                         obj.save_audio(chunk, output_path, sr=22050)
                         logger.info("Saved %s", output_path)
                     del obj
@@ -70,7 +73,7 @@ def feature_extraction():
                     file_path = Path(f"{audio_path.stem}{version_name}").with_suffix('.png')
                     output_path = folder_path / file_path
                     obj.save_spectrogram(mel_db, output_path)
-                    logger.info("Saved %s", output_path)
+                    logger.info("Saved: %s", output_path)
 
                 del obj
                 logger.info("Extracted %s", audio_path)
