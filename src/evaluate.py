@@ -28,8 +28,8 @@ class Evaluator:
     def confusion_matrix(self):
         cm = confusion_matrix(self.all_labels, self.all_preds)
         plt.figure(figsize=(12, 10))
-        sns.heatmap(cm, annot=True, fmt='d', xticklabels=self.class_names, yticklabels=self.class_names)
         sns.heatmap(cm, annot=True, fmt='d', xticklabels=self.present_names, yticklabels=self.present_names)
+        Path('../outputs').mkdir(parents=True, exist_ok=True)
         plt.savefig('../outputs/confusion_matrix.png')
 
     def evaluate(self):
@@ -39,3 +39,7 @@ class Evaluator:
                 preds = self.model(images).argmax(dim=1)
                 self.all_preds.extend(preds.cpu().numpy())
                 self.all_labels.extend(labels.numpy())
+        # Only use labels that appear in predictions/actuals
+        present_labels = sorted(set(self.all_labels) | set(self.all_preds))
+        self.present_names = [str(i) for i in present_labels]
+        logger.info("Evaluated")
