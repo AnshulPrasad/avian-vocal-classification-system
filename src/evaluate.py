@@ -1,7 +1,7 @@
 # Responsibilities:
 # - Confusion matrix
 # - Classification report
-# - Per-species accuracy
+# - Per-label accuracy
 # - Save plots to outputs/
 
 import torch
