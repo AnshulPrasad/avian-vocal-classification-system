@@ -90,6 +90,10 @@ def split_dataset(species_dir, output_dir, splits=(0.7, 0.15, 0.15)):
     val, test = train_test_split(temp, test_size=0.5, random_state=42)
 
     for split_name, split_files in [("train", train), ("val", val), ("test", test)]:
+        output_path = Path(output_dir) / split_name
+        if output_path.exists(): # freshly remake the folder
+            shutil.rmtree(output_path)
+        output_path.mkdir(parents=True, exist_ok=True)
         for f in split_files:
             dest = Path(output_dir) / split_name / f.name
             dest.touch()
