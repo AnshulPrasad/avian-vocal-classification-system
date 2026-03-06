@@ -33,6 +33,7 @@ class BirdSoundDataset(Dataset):
         df['id'] = df['id'].astype(str)
         df['label'] = le.fit_transform(df['type'])
         df['id'] = df['id'].astype(str)
+        self.num_classes = df['label'].max() + 1
         return df.set_index('id')['label']  # id → int label
 
     def labels_int(self):
