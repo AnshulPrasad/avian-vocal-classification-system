@@ -31,7 +31,7 @@ class Evaluator:
         logger.info('Preparing classification report...')
         logger.info(classification_report(self.all_labels, self.all_preds, target_names=self.present_names))
 
-    def confusion_matrix(self):
+    def _confusion_matrix(self):
         logger.info('Preparing confusion matrix...')
         cm = confusion_matrix(self.all_labels, self.all_preds)
         plt.figure(figsize=(12, 10))
