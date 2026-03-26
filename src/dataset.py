@@ -26,7 +26,7 @@ class BirdSoundDataset(Dataset):
 
     def load_all_metadata(self):
         logger.info('Loading all metadata')
-        df = pd.concat([pd.read_csv(f, usecols=['id', 'type']) for f in sorted(Path("../data/raw").glob("*.csv"))],ignore_index=True)
+        df = pd.concat([pd.read_csv(f, usecols=['id', 'type']) for f in sorted(Path(self.RAW_DIR).glob("*.csv"))],ignore_index=True)
         le = LabelEncoder()
         df['id'] = df['id'].astype(str)
         df['label'] = le.fit_transform(df['type'])
