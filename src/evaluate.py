@@ -49,4 +49,3 @@ class Evaluator:
         # Only use labels that appear in predictions/actuals
         present_labels = sorted(set(self.all_labels) | set(self.all_preds))
         self.present_names = [str(i) for i in present_labels]
-        logger.info("Evaluated")
