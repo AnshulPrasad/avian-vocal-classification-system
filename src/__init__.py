@@ -21,6 +21,7 @@ with open(config_path, "r", encoding="utf-8") as f:
 SPECIES_LIST = [(s['scientific_name'], s['common_name']) for s in config['species_list']]
 RAW_DIR = config['RAW_DIR']
 PROCESSED_DIR = config['PROCESSED_DIR']
+SPECTROGRAM_DIR = config["SPECTROGRAM_DIR"]
 
 def download():
     logger.info("Downloading data")
