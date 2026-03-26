@@ -101,7 +101,7 @@ def split_dataset(species_dir, output_dir, splits=(0.7, 0.15, 0.15)):
 
 def dataset(split):
     obj = BirdSoundDataset(f'{SPLIT_DIR}', RAW_DIR, split=split)
-    loader = DataLoader(obj, batch_size=32, shuffle=True, num_workers=4)
+    loader = DataLoader(obj, batch_size=32, shuffle=(split == 'train'), num_workers=4)
     return loader, obj
 
 def model(num_classes):
