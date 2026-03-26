@@ -18,6 +18,8 @@ class Evaluator:
     def __init__(self, test_loader, num_classes, MODEL_PATH, CONFUSION_MATRIX_PATH):
         self.test_loader = test_loader
         self.class_names = list(range(num_classes))
+        self.MODEL_PATH = MODEL_PATH
+        self.CONFUSION_MATRIX_PATH = CONFUSION_MATRIX_PATH
         self.all_preds = []
         self.all_labels = []
         obj = Model()
