@@ -8,6 +8,7 @@ from download import Species
 from preprocess import Preprocessor
 from features import FeatureExtractor
 from dataset import BirdSoundDataset
+from collections import defaultdict
 from model import Model
 from train import Train
 from evaluate import Evaluator
@@ -91,6 +92,13 @@ def split_dataset(species_dir, output_dir, splits=(0.7, 0.15, 0.15)):
     logger.info("Total files in the dataset: %d",len(files))
     train, temp = train_test_split(files, test_size=1-splits[0], random_state=42)
     val, test = train_test_split(temp, test_size=0.5, random_state=42)
+    grouped_files = defaultdict(list) # group by audio ids to avoid data leakage
+    for f in files:
+        recording_id = f.stem.split('_')[-3]
+        grouped_files[recording_id].append(f)
+    unique_ids = list(grouped_files.keys())
+    logger.info(f"Total unique original recordings: {len(unique_ids)}")
+    train_ids, temp_ids = train_test_split(unique_ids, test_size=1 - splits[0], random_state=42)
 
     for split_name, split_files in [("train", train), ("val", val), ("test", test)]:
         output_path = Path(output_dir) / split_name
