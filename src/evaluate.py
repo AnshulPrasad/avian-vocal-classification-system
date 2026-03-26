@@ -20,13 +20,13 @@ class Evaluator:
         self.MODEL_PATH = MODEL_PATH
         self.CONFUSION_MATRIX_PATH = CONFUSION_MATRIX_PATH
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.model = self.model.to(self.device)
         self.all_preds = []
         self.all_labels = []
         obj = Model()
         self.model = obj.build_model(len(self.class_names)) # build a new model
         state = torch.load(f'{MODEL_PATH}', map_location='cpu', weights_only=True)
         self.model.load_state_dict(state)
+        self.model = self.model.to(self.device)
 
     def classify_report(self):
         logger.info('Preparing classification report...')
