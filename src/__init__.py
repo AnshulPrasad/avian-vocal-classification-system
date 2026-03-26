@@ -111,7 +111,7 @@ def model(num_classes):
     return _model
 
 def train(model, train_loader, val_loader):
-    obj = Train(model, train_loader, val_loader)
+    obj = Train(model, train_loader, val_loader, MODEL_PATH)
     obj.train()
 
 def evaluate(test_loader, num_classes):
