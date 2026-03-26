@@ -23,6 +23,7 @@ RAW_DIR = config['RAW_DIR']
 PROCESSED_DIR = config['PROCESSED_DIR']
 
 def download():
+    logger.info("Downloading data")
     for sci_name, common_name in SPECIES_LIST:
         try:
             obj = Species(sci_name, RAW_DIR)
