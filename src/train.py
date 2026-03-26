@@ -32,6 +32,7 @@ class Train:
             loss = self.criterion(self.model(images), labels)
             loss.backward()
             self.optimizer.step()
+            total_loss += loss.item()
         avg_loss = total_loss / len(self.train_loader)
         logger.info("Epoch %d | Train Loss: %.4f", epoch, avg_loss)
 
