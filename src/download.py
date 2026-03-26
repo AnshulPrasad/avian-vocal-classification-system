@@ -5,6 +5,8 @@ import time
 import yaml
 from pathlib import Path
 from dotenv import load_dotenv
+from logger import get_logger
+logger = get_logger(__name__, 'download.log')
 
 # Configuration import
 config_path = Path("../configs/config.yaml")  # change path if needed
@@ -19,27 +21,21 @@ API_KEY = os.getenv('XENO_CANTO_API_KEY')
 if not API_KEY:
     raise ValueError("XENO_CANTO_API_KEY is not set")
 
-OUTPUT_DIR = '../data/raw'
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-from logger import get_logger
-logger = get_logger(__name__, 'download.log')
-
 class Species:
     """
     Download a species recordings from xeno-canto website
     and save it in the output directory and corresponding csv file
     """
     def __init__(self, species):
-        self.species = species
+        self.species = species # species name can be found on xeno-canto website
         self.base_url= f'https://xeno-canto.org/api/3/recordings?query=sp:"{self.species}"&key={API_KEY}'
         with requests.get(self.base_url) as r:
             self.data = r.json()
-        self.rows = []
         if not self.data.get('recordings'):
             raise ValueError("No recordings found for %s", self.species)
         self.english_name = '_'.join(self.data['recordings'][0]['en'].replace('-', ' ').split(' '))
         self.pages = self.data['numPages']
+        self.rows = []
 
     def page_recordings(self, page): # get metadata of all recordings in the page
         page_url = self.base_url + '&page=' + str(page)
@@ -106,43 +102,31 @@ class Species:
     def download_audio(self, metadata):
         try:
             file_name = f"{self.english_name}_{metadata['id']}.mp3"
-
-            if os.path.isfile(f"{OUTPUT_DIR}/{self.english_name}_mp3/{file_name}"):
+            if os.path.isfile(f"{RAW_DIR}/{self.english_name}_mp3/{file_name}"): # Skip already downloaded audio files
                 logger.info("File %s already exists", file_name)
                 return
-
             response = requests.get(metadata['file'], stream=True, timeout=30)  # download
-            with open(f"{OUTPUT_DIR}/{self.english_name}_mp3/{file_name}", 'wb') as f:  # save
+            with open(f"{RAW_DIR}/{self.english_name}_mp3/{file_name}", 'wb') as f:  # save
                 f.write(response.content)
                 logger.info('Downloaded: %s', file_name)
         except Exception as e:
             logger.warning("❌ Failed %s: %s", metadata['id'], e)
 
     def write_csv(self):
-        # Write information in .csv file
-        with open(f'{OUTPUT_DIR}/{self.english_name}.csv', 'w', encoding='utf-8', newline='') as f:
+        with open(f'{RAW_DIR}/{self.english_name}.csv', 'w', encoding='utf-8', newline='') as f: # Write information in .csv file
             writer = csv.DictWriter(f, fieldnames=self.rows[0].keys())
             writer.writeheader()
             writer.writerows(self.rows)
 
     def download(self):
-        self.make_directory()
-        # loop over every page
-        for page in range(1, self.pages + 1):
-            # get all recording's metadata in the page
-            recordings = self.page_recordings(page)
-
-            # loop over every recording instance
-            for record in recordings:
-                # get all metadata of a record and append to list rows which will be used to create .csv file
-                metadata = self.record_metadata(record)
+        os.makedirs(f"{RAW_DIR}/{self.english_name}_mp3", exist_ok=True) # sub-directory for each species to avoid clutter
+        for page in range(1, self.pages + 1): # loop over every page
+            recordings = self.page_recordings(page) # get all recording's metadata in the page
+            for record in recordings: # loop over every recording instance
+                metadata = self.record_metadata(record) # get all metadata of a record and append to list rows which will be used to create .csv file
                 self.rows.append(metadata)
-
-                # download and save .mp3 audio file
-                self.download_audio(metadata)
-
+                self.download_audio(metadata) # download and save .mp3 audio file
                 time.sleep(0.5)
             time.sleep(1)
-
         logger.info("Downloaded %d recordings for %s", len(self.rows), self.english_name)
         self.write_csv()
