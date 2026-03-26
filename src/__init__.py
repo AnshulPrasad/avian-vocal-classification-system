@@ -22,7 +22,6 @@ SPECIES_LIST = [(s['scientific_name'], s['common_name']) for s in config['specie
 RAW_DIR = config['RAW_DIR']
 PROCESSED_DIR = config['PROCESSED_DIR']
 SPECTROGRAM_DIR = config["SPECTROGRAM_DIR"]
-SPLIT_DIR = config("SPLIT_DIR")
 SPLIT_DIR = config["SPLIT_DIR"]
 MODEL_PATH = config["MODEL_PATH"]
 CONFUSION_MATRIX_PATH = config["CONFUSION_MATRIX_PATH"]
