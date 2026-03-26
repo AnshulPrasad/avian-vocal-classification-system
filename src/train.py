@@ -31,7 +31,8 @@ class Train:
             loss = self.criterion(self.model(images), labels)
             loss.backward()
             self.optimizer.step()
-        logger.info("Trained epoch: %d", epoch)
+        avg_loss = total_loss / len(self.train_loader)
+        logger.info("Epoch %d | Train Loss: %.4f", epoch, avg_loss)
 
     def validate_one_epoch(self, epoch):
         logger.info("Validating epoch: %d", epoch)
