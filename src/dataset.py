@@ -37,8 +37,8 @@ class BirdSoundDataset(Dataset):
     def labels_int(self):
         logger.info(f'Loading labels({self.split})')
         ids = [file.stem.split('_')[-3] for file in self.files]  # extract all IDs at once
-        logger.info('Loaded labels')
-        return self.load_all_metadata().reindex(ids, fill_value=-1).tolist()
+        labels = self.load_all_metadata().reindex(ids, fill_value=-1).tolist()
+        return labels
 
     def __len__(self):
         return len(self.files)
