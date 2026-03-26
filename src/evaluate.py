@@ -19,6 +19,8 @@ class Evaluator:
         self.class_names = list(range(num_classes))
         self.MODEL_PATH = MODEL_PATH
         self.CONFUSION_MATRIX_PATH = CONFUSION_MATRIX_PATH
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.model = self.model.to(self.device)
         self.all_preds = []
         self.all_labels = []
         obj = Model()
@@ -42,6 +44,7 @@ class Evaluator:
         self.model.eval()
         with torch.no_grad():
             for images, labels in self.test_loader:
+                images = images.to(self.device)
                 preds = self.model(images).argmax(dim=1)
                 self.all_preds.extend(preds.cpu().numpy())
                 self.all_labels.extend(labels.numpy())
