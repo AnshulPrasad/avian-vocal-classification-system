@@ -70,9 +70,9 @@ def feature_extraction():
                 stretched, pitched, noisy = obj.augment_audio()
                 folder_path = Path(f"{SPECTROGRAM_DIR}/{'_'.join(audio_path.stem.split('_')[:-2])}_png")
                 folder_path.mkdir(parents=True, exist_ok=True)
-                for audio_version, version_name in zip([audio, stretched, pitched, noisy], ['_audio', '_stretched', '_pitched', '_noisy']):
+                for audio_version, version_name in zip([audio, stretched, pitched, noisy], ['audio', 'stretched', 'pitched', 'noisy']):
                     mel_db = obj.generate_melspectrogram(audio_version)
-                    file_path = Path(f"{audio_path.stem}{version_name}").with_suffix('.png')
+                    file_path = Path(f"{audio_path.stem}_{version_name}").with_suffix('.png')
                     output_path = folder_path / file_path
                     if output_path.exists():
                         logger.info("Already exist: %s", output_path)
