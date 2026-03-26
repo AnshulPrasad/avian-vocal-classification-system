@@ -1,15 +1,14 @@
-import librosa
-import soundfile as sf
-
-from logger import get_logger
-logger = get_logger(__name__, 'preprocess.log')
-
 # Responsibilities:
 # - Resample MP3s to 22050 Hz
 # - Convert stereo to mono
 # - Trim silence
 # - Chunk into 5-second clips
 # - Save as WAV to data/processed/
+
+import librosa
+import soundfile as sf
+from logger import get_logger
+logger = get_logger(__name__, 'preprocess.log')
 
 class Preprocessor:
     def __init__(self, audio, original_sr):
