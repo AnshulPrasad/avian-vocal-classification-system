@@ -4,9 +4,6 @@ import shutil
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
-
-from logger import get_logger
-logger = get_logger(__name__, 'pipeline.log')
 from download import Species
 from preprocess import Preprocessor
 from features import FeatureExtractor
@@ -15,6 +12,8 @@ from model import Model
 from train import Train
 from evaluate import Evaluator
 from predict import Predictor
+from logger import get_logger
+logger = get_logger(__name__, 'pipeline.log')
 
 config_path = Path("../configs/config.yaml")  # change path if needed
 with open(config_path, "r", encoding="utf-8") as f:
