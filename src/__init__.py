@@ -100,14 +100,15 @@ def split_dataset(species_dir, output_dir, splits=(0.7, 0.15, 0.15)):
     val_ratio = splits[1] / (splits[1] + splits[2])
     val_ids, test_ids = train_test_split(temp_ids, test_size=1 - val_ratio, random_state=42)
 
-    for split_name, split_files in [("train", train), ("val", val), ("test", test)]:
+    for split_name, ids in [("train", train_ids), ("val", val_ids), ("test", test_ids)]:
         output_path = Path(output_dir) / split_name
         if output_path.exists(): # freshly remake the folder
             shutil.rmtree(output_path)
         output_path.mkdir(parents=True, exist_ok=True)
-        for f in split_files:
-            file_path = output_path / f.name
-            shutil.copy(f, file_path)
+        for rec_id in ids: # iterate over the ids that belong to this split
+            for f in grouped_files[rec_id]:
+                file_path = output_path / f.name
+                shutil.copy(f, file_path)
 
 def dataset(split):
     obj = BirdSoundDataset(f'{SPLIT_DIR}', RAW_DIR, split=split)
