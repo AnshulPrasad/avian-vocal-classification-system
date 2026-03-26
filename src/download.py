@@ -2,8 +2,18 @@ import csv
 import requests
 import os
 import time
+import yaml
+from pathlib import Path
 from dotenv import load_dotenv
 
+# Configuration import
+config_path = Path("../configs/config.yaml")  # change path if needed
+with open(config_path, "r", encoding="utf-8") as f:
+    config = yaml.safe_load(f)
+RAW_DIR = config["RAW_DIR"]
+os.makedirs(RAW_DIR, exist_ok=True)
+
+# API key import
 load_dotenv()
 API_KEY = os.getenv('XENO_CANTO_API_KEY')
 if not API_KEY:
