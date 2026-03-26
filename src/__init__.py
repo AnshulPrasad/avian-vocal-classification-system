@@ -13,7 +13,7 @@ from train import Train
 from evaluate import Evaluator
 from predict import Predictor
 from logger import get_logger
-logger = get_logger(__name__, 'pipeline.log')
+logger = get_logger(__name__, '__init__.log')
 
 config_path = Path("../configs/config.yaml")  # change path if needed
 with open(config_path, "r", encoding="utf-8") as f:
