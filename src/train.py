@@ -55,7 +55,7 @@ class Train:
         if val_acc > self.best_val_acc:
             self.best_val_acc = val_acc
             torch.save(self.model.state_dict(), f"{self.MODEL_PATH}")
-        logger.info("Saved best model")
+            logger.info("New best model saved | Val Acc: %.4f", val_acc)
 
     def train(self):
         logger.info("Training...")
