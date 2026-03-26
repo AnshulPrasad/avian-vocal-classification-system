@@ -25,6 +25,7 @@ class Train:
     def train_one_epoch(self, epoch):
         logger.info("Training epoch: %d", epoch)
         self.model.train()
+        total_loss=0.0
         for images, labels in self.train_loader:
             images, labels = images.to(self.device), labels.to(self.device)
             self.optimizer.zero_grad()
