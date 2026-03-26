@@ -3,6 +3,7 @@
 # - DataLoaders for train/val/test
 # - Label encoding
 
+import json
 import pandas as pd
 from torch.utils.data import Dataset
 from torchvision import transforms
@@ -34,6 +35,9 @@ class BirdSoundDataset(Dataset):
         le = LabelEncoder()
         df['label'] = le.fit_transform(df['type'])
         self.num_classes = df['label'].max() + 1
+        mapping_dict = {int(index): label for index, label in enumerate(le.classes_)}
+        with open('../models/class_mapping.json', 'w') as f:
+            json.dump(mapping_dict, f)
         return df.set_index('id')['label']  # id → int label
 
     def labels_int(self):
