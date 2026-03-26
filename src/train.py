@@ -6,7 +6,6 @@
 
 import torch
 import torch.nn as nn
-
 from logger import get_logger
 logger = get_logger(__name__, 'train.log')
 
