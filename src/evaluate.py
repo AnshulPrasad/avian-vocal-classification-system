@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import classification_report, confusion_matrix
 from logger import get_logger
-logger = get_logger(__name__, 'pipeline.log')
+logger = get_logger(__name__, 'evaluate.log')
 
 from model import Model
 
