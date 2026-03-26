@@ -115,7 +115,7 @@ def train(model, train_loader, val_loader):
     obj.train()
 
 def evaluate(test_loader, num_classes):
-    obj = Evaluator(test_loader, num_classes)
+    obj = Evaluator(test_loader, num_classes, MODEL_PATH, CONFUSION_MATRIX_PATH)
     obj.evaluate()
     obj.confusion_matrix()
     obj.classify_report()
