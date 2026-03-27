@@ -63,6 +63,18 @@ class BirdSoundDataset():
         valid_ids = set(df['id'].tolist())
 
         return df, valid_ids
+
+    def grouped_files(self):
+        _, valid_ids = self.id_label()
+
+        # group by audio ids to avoid data leakage
+        grouped_files = defaultdict(list)
+        for f in self.files:
+            rec_id = f.stem.split('_')[-3]
+            if rec_id in valid_ids:
+                grouped_files[rec_id].append(f)
+        return grouped_files
+
         le = LabelEncoder()
         df['label'] = le.fit_transform(df['type'])
         self.num_classes = df['label'].max() + 1
