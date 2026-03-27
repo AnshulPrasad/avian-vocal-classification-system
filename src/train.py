@@ -18,7 +18,7 @@ class Train:
         self.MODEL_PATH = MODEL_PATH
         self.epochs = epochs
         self.lr = lr
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=lr, weight_decay=1e-4)
         self.criterion = nn.CrossEntropyLoss()
         self.best_val_acc = 0
 
