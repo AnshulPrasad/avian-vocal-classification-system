@@ -5,8 +5,7 @@ from torch.utils.data import DataLoader
 from download import Species
 from preprocess import Preprocessor
 from features import FeatureExtractor
-from dataset import BirdSoundDataset
-from collections import defaultdict
+from dataset import BirdSoundDataset, BirdSplitDataset
 from model import Model
 from train import Train
 from evaluate import Evaluator
