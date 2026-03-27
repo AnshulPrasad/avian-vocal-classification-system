@@ -26,9 +26,10 @@ class BirdSoundDataset(Dataset):
             transforms.Normalize(mean=[0.5], std=[0.5])
         ])
 
-    def load_all_metadata(self):
-        logger.info(f'Loading all metadata({self.split})')
-        df = pd.concat([pd.read_csv(f, usecols=['id', 'type']) for f in sorted(Path(self.RAW_DIR).glob("*.csv"))],ignore_index=True)
+    def id_label(self):
+        # build recording_id → label mapping from CSVs
+        dfs = [pd.read_csv(f, usecols=['id', 'type']) for f in sorted(Path(self.RAW_DIR).glob("*.csv"))]
+        df = pd.concat(dfs,ignore_index=True)
         df['id'] = df['id'].astype(str)
         df['type'] = df['type'].fillna('unknown').astype(str).str.lower()
         df['type'] = df['type'].apply(lambda x: x.split(',')[0].strip())
