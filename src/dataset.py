@@ -13,9 +13,9 @@ from sklearn.preprocessing import LabelEncoder
 from logger import get_logger
 logger = get_logger(__name__, 'dataset.log')
 
-class BirdSoundDataset(Dataset):
-    def __init__(self, SPLIT_DIR, RAW_DIR, split='train', transform=None):
-        self.SPLIT_DIR = Path(SPLIT_DIR) / split
+class BirdSoundDataset():
+    def __init__(self, SPLIT_DIR, RAW_DIR, SPECTROGRAM_DIR, transform=None):
+        self.SPLIT_DIR = SPLIT_DIR
         self.RAW_DIR = RAW_DIR
         self.SPECTROGRAM_DIR = SPECTROGRAM_DIR
         self.files = list(Path(self.SPECTROGRAM_DIR).rglob("*.png"))
