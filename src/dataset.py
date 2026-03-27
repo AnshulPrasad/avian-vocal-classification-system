@@ -164,11 +164,21 @@ class BirdSplitDataset(Dataset):
             raise ValueError("split must be train/val/test")
 
         self.num_classes = data["num_classes"]
-        self.transform = transform or transforms.Compose([
-            transforms.Resize((224, 224)),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ])
+        if split == "train":
+            self.transform = transform or transforms.Compose([
+                transforms.Resize((224, 224)),
+                transforms.RandomHorizontalFlip(),
+                transforms.ColorJitter(brightness=0.2, contrast=0.2),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            ])
+        else:
+            # Clean, non-random transforms for Val and Test sets!
+            self.transform = transform or transforms.Compose([
+                transforms.Resize((224, 224)),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            ])
 
     def __len__(self):
         return len(self.paths)
