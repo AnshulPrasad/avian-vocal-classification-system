@@ -154,12 +154,15 @@ class BirdSplitDataset(Dataset):
         if split == "train":
             self.paths = data["train_paths"]
             self.labels = data["train_labels"]
+            logger.info("Train: %d %d",len(self.paths), len(self.labels))
         elif split == "val":
             self.paths = data["val_paths"]
             self.labels = data["val_labels"]
+            logger.info("Val: %d %d", len(self.paths), len(self.labels))
         elif split == "test":
             self.paths = data["test_paths"]
             self.labels = data["test_labels"]
+            logger.info("Test: %d %d", len(self.paths), len(self.labels))
         else:
             raise ValueError("split must be train/val/test")
 
