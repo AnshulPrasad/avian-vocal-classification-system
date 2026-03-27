@@ -84,6 +84,46 @@ class BirdSoundDataset():
         labels_for_unique_ids = [ids_types[i] for i in unique_ids]
         return unique_ids, labels_for_unique_ids
 
+    def split_dataset(self, splits=(0.7, 0.15, 0.15)):
+        unique_ids, labels_for_unique_ids = self.stratify()
+        grouped_files = self.grouped_files()
+
+        train_ids, temp_ids, _, temp_labels = train_test_split(
+            unique_ids, labels_for_unique_ids,
+            test_size=1 - splits[0],
+            random_state=42,
+            stratify=labels_for_unique_ids
+        )
+        val_ratio = splits[1] / (splits[1] + splits[2])
+        val_ids, test_ids, _, _ = train_test_split(
+            temp_ids, temp_labels,
+            test_size=1 - val_ratio,
+            random_state=42,
+            stratify=temp_labels
+        )
+
+        # copy files
+        _paths = []
+        for split_name, ids in [("train", train_ids), ("val", val_ids), ("test", test_ids)]:
+            # freshly remake the folder
+            output_path = Path(self.SPLIT_DIR) / split_name
+            if output_path.exists():
+                shutil.rmtree(output_path)
+            output_path.mkdir(parents=True, exist_ok=True)
+
+            # iterate over the ids that belong to this split
+            paths=[]
+            for rec_id in ids:
+                for f in grouped_files[rec_id]:
+                    file_path = output_path / f.name
+                    paths.append(file_path)
+                    shutil.copy(f, file_path)
+            _paths.append(paths)
+
+        # logger.info("Split complete — train:%d val:%d test:%d recording IDs",
+        #             len(train_paths), len(val_paths), len.test_paths))
+        return _paths
+
         le = LabelEncoder()
         df['label'] = le.fit_transform(df['type'])
         self.num_classes = df['label'].max() + 1
