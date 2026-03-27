@@ -19,6 +19,9 @@ class Train:
         self.epochs = epochs
         self.lr = lr
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=lr, weight_decay=1e-4)
+        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            self.optimizer, mode='max', factor=0.5, patience=2, verbose=True
+        )
         self.criterion = nn.CrossEntropyLoss()
         self.best_val_acc = 0
 
@@ -62,5 +65,6 @@ class Train:
         for epoch in range(1, 1+self.epochs):
             self.train_one_epoch(epoch) # Training
             val_acc = self.validate_one_epoch(epoch) # Validation
+            self.scheduler.step(val_acc)
             self.save_best_model(val_acc) # Save best model
         logger.info("Trained")
