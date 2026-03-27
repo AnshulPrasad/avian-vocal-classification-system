@@ -171,9 +171,8 @@ class BirdSplitDataset(Dataset):
         ])
 
     def __len__(self):
-        return len(self.files)
+        return len(self.paths)
 
     def __getitem__(self, idx):
-        path = self.files[idx]
-        image = Image.open(path).convert('RGB')
+        image = Image.open(self.paths[idx]).convert("RGB")
         return self.transform(image), self.labels[idx]
