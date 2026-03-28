@@ -11,20 +11,8 @@ from train import Train
 from evaluate import Evaluator
 from predict import Predictor
 from logger import get_logger
+from config.config import RAW_DIR, PROCESSED_DIR, SPECTROGRAM_DIR, MODEL_PATH, CONFUSION_MATRIX_PATH, SPECIES_LIST
 logger = get_logger(__name__, '__init__.log')
-
-# Force the path to be absolute based on where __init__.py is located
-current_dir = Path(__file__).resolve().parent
-config_path = current_dir.parent / "configs" / "config.yaml"
-with open(config_path, "r", encoding="utf-8") as f:
-    config = yaml.safe_load(f)
-SPECIES_LIST = [(s['scientific_name'], s['common_name']) for s in config['species_list']]
-RAW_DIR = config['RAW_DIR']
-PROCESSED_DIR = config['PROCESSED_DIR']
-SPECTROGRAM_DIR = config["SPECTROGRAM_DIR"]
-SPLIT_DIR = config["SPLIT_DIR"]
-MODEL_PATH = config["MODEL_PATH"]
-CONFUSION_MATRIX_PATH = config["CONFUSION_MATRIX_PATH"]
 
 def download():
     logger.info("Downloading data...")
