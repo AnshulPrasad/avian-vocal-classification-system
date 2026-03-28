@@ -26,6 +26,7 @@ class BirdSoundDataset:
         self.df = self.data_frame()
         self.valid_ids = set(self.df['id'].tolist())
         self.grouped_files_list = self.grouped_files()
+        self.ids, self.labels = self.ids_and_types()
 
         # encode labels
         self.le = LabelEncoder()
@@ -85,7 +86,7 @@ class BirdSoundDataset:
                 grouped_files[rec_id].append(f)
         return grouped_files
 
-    def ids_and_labels(self):
+    def ids_and_types(self):
         ids_types = self.df.drop_duplicates("id").set_index("id")["type"]
         unique_ids = [i for i in self.grouped_files_list.keys() if i in ids_types.index]
         labels_for_unique_ids = [ids_types[i] for i in unique_ids]
