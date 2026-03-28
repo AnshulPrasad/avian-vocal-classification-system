@@ -1,54 +1,54 @@
-# Bioacoustic Classification System
+# Avian Vocal Classification System
 
-A practical end-to-end pipeline for animal audio (focused on Indian bird species):
+**Avian Vocal Classification System** is an end-to-end pipeline for **bird vocalization classification** using recordings from [Xeno-canto](https://xeno-canto.org/). The project targets **Indian bird species for data collection**, but the **trained model predicts vocalization type** (e.g. call, song, alarm call, flight call) using Xeno-canto metadata—not species identity.
 
-1. Download raw recordings from Xeno-canto
-2. Preprocess audio (resample, mono, trim, chunk)
-3. Generate augmented Mel spectrograms
-4. Split spectrograms into train/val/test folders
+Repository / package name: `avian-vocal-classification-system` (kebab-case).
 
-This repo is aimed at learning and building a foundation for sound-type or species classification models.
+Implemented pieces:
 
-## Current Status
+1. Download raw recordings per species (`src/download.py`)
+2. Preprocess audio: resample, mono, trim silence, 5 s chunks (`src/preprocess.py`)
+3. Augmented mel spectrograms saved as PNG (`src/features.py`)
+4. Stratified train/val/test split by **recording ID** (no leakage) and label encoding (`src/dataset.py`)
+5. **EfficientNet-B0** classifier (`src/model.py`), training with validation and best-checkpoint saving (`src/train.py`)
+6. Evaluation: confusion matrix + classification report (`src/evaluate.py`)
+7. Inference on raw audio: mel → image → model (`src/predict.py`)
+8. **Django 6** web UI: upload audio, show predicted class + confidence (`webapp/`)
 
-Implemented:
-- Data download pipeline (`src/download.py`)
-- Audio preprocessing pipeline (`src/preprocess.py`)
-- Feature extraction + augmentation (`src/features.py`)
-- End-to-end orchestration (`src/__init__.py`)
-- Logging utilities (`src/logger.py`)
+## How it fits together
 
-Scaffolded (to be implemented):
-- Dataset class (`src/dataset.py`)
-- Model API (`src/model.py`)
-- Training/evaluation/prediction scripts (`src/train.py`, `src/evaluate.py`, `src/predict.py`)
+- **`configs/config.yaml`** lists species for downloading and paths for data, splits, and model checkpoint.
+- **`BirdSoundDataset`** scans spectrogram PNGs, builds stratified splits from CSV metadata, copies files into `SPLIT_DIR`, and writes `models/split_index.json` plus `models/class_mapping.json`.
+- **`BirdSplitDataset`** loads images from the saved index for training/evaluation.
+- The **web app** loads `models/checkpoints/best_model.pth` and `models/class_mapping.json` (paths are set in `webapp/views.py`).
 
-## Project Structure
+## Project structure
 
 ```text
-bioacoustic-classification-system/
+avian-vocal-classification-system/
+├── config/                    # Django project (settings, root urls)
+├── webapp/                    # Upload + predict UI (templates, views)
+├── manage.py                  # Django entrypoint
 ├── configs/
-│   └── config.yaml               # Species list
-├── data/
-│   ├── raw/                      # Downloaded MP3 + per-species metadata CSV
-│   ├── processed/                # Processed WAV chunks
-│   └── spectrograms/
-│       ├── all/                  # Full generated spectrogram set
-│       ├── train/
-│       ├── val/
-│       └── test/
-├── logs/                         # download.log, preprocess.log, features.log, pipeline.log
+│   └── config.yaml            # Species list + directory paths + model paths
+├── data/                      # raw MP3/CSV, processed WAV, spectrograms, split copies (typical layout)
+├── models/
+│   ├── checkpoints/           # best_model.pth (from training)
+│   ├── class_mapping.json     # int id → label name (written by dataset step)
+│   └── split_index.json       # train/val/test paths + labels (written by dataset step)
+├── outputs/                   # confusion matrix and other evaluation outputs
+├── logs/                      # per-module logs
 ├── src/
-│   ├── __init__.py               # Pipeline entrypoint
+│   ├── __init__.py            # Orchestration: data stages + train (see below)
 │   ├── download.py
 │   ├── preprocess.py
 │   ├── features.py
-│   ├── logger.py
-│   ├── dataset.py                # TODO
-│   ├── model.py                  # TODO
-│   ├── train.py                  # TODO
-│   ├── evaluate.py               # TODO
-│   └── predict.py                # TODO
+│   ├── dataset.py             # BirdSoundDataset, BirdSplitDataset
+│   ├── model.py
+│   ├── train.py
+│   ├── evaluate.py
+│   ├── predict.py
+│   └── logger.py
 ├── pyproject.toml
 ├── uv.lock
 └── README.md
@@ -56,23 +56,23 @@ bioacoustic-classification-system/
 
 ## Requirements
 
-- Python 3.12+
-- `uv` (recommended) or `pip`
-- Xeno-canto API key
+- Python 3.12
+- [uv](https://github.com/astral-sh/uv) (recommended) or pip
+- Xeno-canto API key for downloading
 
 ## Setup
 
-### 1) Install dependencies (uv)
+### 1) Install dependencies
 
-From repo root:
+From the repository root:
 
 ```bash
 uv sync
 ```
 
-### 2) Create `.env`
+### 2) Environment
 
-Create `.env` in project root:
+Create `.env` in the project root:
 
 ```env
 XENO_CANTO_API_KEY=your_api_key_here
@@ -80,242 +80,70 @@ XENO_CANTO_API_KEY=your_api_key_here
 
 `src/download.py` loads this with `python-dotenv`.
 
-### 3) Configure species list
+### 3) Configure species and paths
 
-Edit `configs/config.yaml`:
+Edit `configs/config.yaml`: set `species_list` and paths such as `RAW_DIR`, `PROCESSED_DIR`, `SPECTROGRAM_DIR`, `SPLIT_DIR`, `MODEL_PATH`, and `CONFUSION_MATRIX_PATH`. Paths are written relative to how you run scripts (see below).
+
+Example species entries:
 
 ```yaml
 species_list:
-  - scientific_name: "Eudynamys scolopaceus"
-    common_name: "Asian Koel"
-  - scientific_name: "Pavo cristatus"
-    common_name: "Indian Peafowl"
+  - scientific_name: "Pycnonotus cafer"
+    common_name: "Red-vented Bulbul"
+  # ...
 ```
 
-## Run The Pipeline
+## Running the pipeline
 
-Important: current code uses relative paths like `../data/...` inside `src/`, so run from `src/`.
+Scripts under `src/` use imports and paths that assume you run from **`src/`** (as in the original layout), so:
 
 ```bash
 cd src
 uv run python __init__.py
 ```
 
-This runs:
-- `download()`
-- `preprocess()`
-- `feature_extraction()`
-- `split_dataset('../data/spectrograms/all', '../data/spectrograms')`
+By default, `src/__init__.py` runs **training** (train/val loaders, model build, `Train.train()`). Other stages are commented out at the bottom of the file—uncomment or call them as needed.
 
-## Stage Details
+Typical order of operations:
 
-### Download (`src/download.py`)
+1. **`download()`** — fetch MP3s and per-species CSV metadata into `RAW_DIR`.
+2. **`preprocess()`** — WAV chunks in `PROCESSED_DIR`.
+3. **`feature_extraction()`** — mel spectrogram PNGs under `SPECTROGRAM_DIR`.
+4. **Build split index** — instantiate `BirdSoundDataset` with your `SPLIT_DIR`, `RAW_DIR`, and `SPECTROGRAM_DIR`, then call `build_and_save_index("../models/split_index.json")` (adjust path if your cwd differs). This also writes `models/class_mapping.json`.
+5. **Train** — run `__main__` in `src/__init__.py` (or wire the same calls) so `dataset('train'|'val'|'test')` uses `models/split_index.json` and saves the best weights to `MODEL_PATH`.
+6. **`evaluate(...)`** — uncomment the evaluate call in `__init__.py` after training to run the test loader and write metrics/plots per `CONFUSION_MATRIX_PATH`.
 
-- Calls Xeno-canto API v3 per species
-- Downloads MP3 files into `data/raw/<Common_Name>_mp3/`
-- Writes species metadata CSV into `data/raw/`
+## Model and features
 
-### Preprocess (`src/preprocess.py`)
+- **Backbone:** `torchvision` EfficientNet-B0 (ImageNet weights), custom classifier head for `num_classes`.
+- **Input:** PNG spectrograms, 224×224, ImageNet normalization (same in `BirdSplitDataset` and `Predictor`).
+- **Mel params (feature extraction):** e.g. `n_mels=128`, `fmin=500`, `fmax=8000`, `hop_length=512`, sample rate 22050 Hz. Prediction pads/trims audio to 5 s and matches this mel setup.
 
-- Resample to 22050 Hz
-- Convert to mono
-- Trim silence
-- Split into 5-second chunks
-- Save WAV chunks to `data/processed/`
+## Web app (Django)
 
-### Feature Extraction (`src/features.py`)
+From the **repository root** (where `manage.py` lives):
 
-- Augment waveform:
-  - time-stretch
-  - pitch-shift
-  - additive noise
-- Generate Mel spectrogram (`fmin=500`, `fmax=8000`, `n_mels=128`)
-- Save:
-  - `.png` for visualization
-  - `.npy` for numeric arrays
+```bash
+uv run python manage.py runserver
+```
 
-### Dataset Split (`split_dataset` in `src/__init__.py`)
+Open the site root URL; upload an audio file. The app uses `Predictor` with `models/checkpoints/best_model.pth` and `models/class_mapping.json` (see `webapp/views.py` if you need to change paths).
 
-- Reads all `.png` from `data/spectrograms/all`
-- Splits using 70/15/15
-- Copies files to:
-  - `data/spectrograms/train`
-  - `data/spectrograms/val`
-  - `data/spectrograms/test`
+For production, configure `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, and static/media settings appropriately.
 
 ## Logging
 
-Logs are written to `logs/`:
-- `download.log`
-- `preprocess.log`
-- `features.log`
-- `pipeline.log`
-
-Format:
-
-```text
-%(asctime)s | %(name)s | %(levelname)s :: %(message)s
-```
+Logs go under `logs/` with a shared format (`download`, `preprocess`, `features`, `train`, `evaluate`, `predict`, pipeline modules).
 
 ## Troubleshooting
 
-### 1) `XENO_CANTO_API_KEY is not set`
+- **`XENO_CANTO_API_KEY is not set`** — ensure `.env` exists at the project root and the variable name matches what `download.py` expects.
+- **`split_index.json` / empty loaders** — run the dataset builder after spectrograms exist; confirm paths in `config.yaml` and that `models/split_index.json` was generated.
+- **`ModuleNotFoundError` for `src` in Django** — `webapp/views.py` adds `src` to `sys.path`; run `manage.py` from the repo root.
+- **Path confusion** — prefer running pipeline commands from `src/` or refactor paths to `Path(__file__).resolve()` if you want to run from the repo root only.
 
-- Ensure `.env` exists at project root
-- Ensure variable name is exactly `XENO_CANTO_API_KEY`
-- Re-run script after updating `.env`
+## Optional extensions
 
-### 2) `n_samples=0` in `train_test_split`
-
-- No PNG files were found in split source path
-- Run `feature_extraction()` first
-- Verify files exist in `data/spectrograms/all`
-- Ensure you run from `src/` directory
-
-### 3) `PySoundFile failed. Trying audioread instead`
-
-- Usually non-fatal fallback warning
-- Optional fix: install system `libsndfile` and keep `soundfile` updated
-
-### 4) Path confusion (`../data/...`)
-
-- Run entrypoint from `src/`
-- Or refactor to absolute paths based on `Path(__file__).resolve()`
-
-## Development Notes
-
-- `.env` is gitignored (recommended)
-- Do not hardcode API keys in source/config
-- Current training/evaluation scripts are placeholders and should be implemented next
-
-## Suggested Next Steps
-
-1. Implement `BirdSoundDataset` in `src/dataset.py`
-2. Implement model builder in `src/model.py`
-3. Add real training loop + validation in `src/train.py`
-4. Add confusion matrix and metrics in `src/evaluate.py`
-5. Add `predict.py` for single-file inference
-
-
-## Missing Pipeline Pieces (Planned)
-
-The repository already has placeholders for model training, evaluation, and inference. The sections below define what should be added next.
-
-### 1) Labeling + Metadata Builder (new utility)
-
-Goal:
-- Build a single metadata file for training.
-
-Suggested output:
-- `data/metadata.csv`
-
-Suggested columns:
-- `file_path`
-- `species`
-- `label` (e.g., song/call/alarm/unknown)
-- `split` (train/val/test)
-- `duration_sec`
-- `sample_rate`
-
-Why this is needed:
-- Central source of truth for data loading and reproducible experiments.
-
-### 2) Dataset + DataLoaders (`src/dataset.py`)
-
-Implement:
-- `BirdSoundDataset(Dataset)`
-- `get_dataloaders(batch_size, num_workers, image_size)`
-
-Expected behavior:
-- Load spectrogram `.png` or `.npy`
-- Encode labels to integer IDs
-- Return `(tensor, label)`
-- Create train/val/test DataLoaders
-
-### 3) Model Factory (`src/model.py`)
-
-Implement:
-- `build_model(num_classes, backbone="efficientnet_b0", pretrained=True)`
-- `save_checkpoint(...)`
-- `load_checkpoint(...)`
-
-Expected behavior:
-- Replace classifier head to match `num_classes`
-- Return PyTorch model ready for training or inference
-
-### 4) Training Loop (`src/train.py`)
-
-Implement:
-- `train_one_epoch(...)`
-- `validate(...)`
-- `run_training(...)`
-
-Recommended features:
-- Optimizer + scheduler
-- Early stopping
-- Best-checkpoint saving to `models/`
-- Metric logging (loss, accuracy, macro-F1)
-
-Suggested outputs:
-- `models/best.pt`
-- `outputs/history.csv`
-- `outputs/loss_curve.png`
-
-### 5) Evaluation Pipeline (`src/evaluate.py`)
-
-Implement:
-- `evaluate_model(...)`
-- `plot_confusion_matrix(...)`
-- `generate_report(...)`
-
-Suggested outputs:
-- `outputs/confusion_matrix.png`
-- `outputs/classification_report.txt`
-- Per-class precision/recall/F1 table
-
-### 6) Prediction Pipeline (`src/predict.py`)
-
-Implement:
-- `predict_species(audio_path, model_path)`
-- Optional `predict_batch(input_dir, model_path)`
-
-Expected behavior:
-- Run same preprocessing + feature extraction as training
-- Return top-k class probabilities
-- Save predictions to `outputs/predictions.csv`
-
-### 7) Config-Driven Runs (recommended)
-
-Add more settings into `configs/config.yaml`, for example:
-- audio params (`target_sr`, `chunk_sec`, `n_mels`)
-- augmentation params
-- training params (`batch_size`, `epochs`, `lr`)
-
-Benefit:
-- No hardcoded hyperparameters inside scripts.
-
-### 8) Reproducibility + Quality Checks
-
-Add:
-- Global random seed setup
-- Data leakage checks (same recording not in multiple splits)
-- Minimum sample checks per class
-
-Benefit:
-- Stable and trustworthy model comparisons.
-
-### 9) Optional Deployment Layer
-
-Later you can add:
-- Streamlit app for uploading audio and showing predictions
-- Lightweight API wrapper for programmatic inference
-
-## Suggested Implementation Order
-
-1. `dataset.py`
-2. `model.py`
-3. `train.py`
-4. `evaluate.py`
-5. `predict.py`
-6. config refinement + reproducibility checks
-
+- Tighten config-driven hyperparameters in `configs/config.yaml`.
+- Add API tests and CI; harden the Django deployment settings.
+- Species-level classification would require a different label source and training target than the current vocalization-type setup.
