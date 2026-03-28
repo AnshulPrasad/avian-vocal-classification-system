@@ -20,7 +20,7 @@ class FeatureExtractor:
         pitched = librosa.effects.pitch_shift(self.audio, sr=sr, n_steps=np.random.randint(-2,2)) # pitch shift
         noise = np.random.normal(0, 0.005, len(self.audio)) # add background noise
         noisy = self.audio + noise
-        return stretched, pitched, noisy
+        return self.audio, stretched, pitched, noisy
 
     @staticmethod
     def generate_melspectrogram(audio: np.ndarray, sr:int =22050, n_mels:int =128, hop_length:int =512):
