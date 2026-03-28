@@ -9,10 +9,14 @@ import torch.nn as nn
 class Model:
     def __init__(self): ...
 
-    def build_model(self, num_classes):
+    def build_model(self, num_classes, freeze_backbone=True):
         model = models.efficientnet_b0(weights='IMAGENET1K_V1')
-        model.classifier[1] = nn.Linear(
-            model.classifier[1].in_features,
-            num_classes
+        if freeze_backbone:
+            for param in model.features.parameters():
+                param.requires_grad = False  # freeze backbone
+        num_features = model.classifier[1].in_features
+        model.classifier = nn.Sequential(
+            nn.Dropout(p=0.3),  # lower dropout when only training classifier
+            nn.Linear(num_features, num_classes)
         )
         return model
