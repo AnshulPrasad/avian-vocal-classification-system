@@ -22,13 +22,13 @@ class FeatureExtractor:
         noisy = self.audio + noise
         return stretched, pitched, noisy
 
-    def generate_melspectrogram(self, audio, sr=22050, n_mels=128, hop_length=512):
+    @staticmethod
     def generate_melspectrogram(audio: np.ndarray, sr:int =22050, n_mels:int =128, hop_length:int =512):
         mel = librosa.feature.melspectrogram(y=audio, n_mels=n_mels, sr=sr, hop_length=hop_length, fmin=500, fmax=8000)
         mel_db = librosa.power_to_db(mel, ref=np.max) # convert to decibels
         return mel_db
 
-    def save_spectrogram(self, spectrogram, path, hop_length=512, x_axis="time", y_axis="mel"):
+    @staticmethod
     def save_spectrogram(spectrogram: np.ndarray, path: Path):
         # Normalize to 0-255
         mel_norm = ((spectrogram - spectrogram.min()) /
