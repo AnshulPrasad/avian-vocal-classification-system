@@ -38,7 +38,7 @@ class Predictor:
     def load_model(self):
         logger.info("Loading model into memory...")
         obj = Model()
-        model = obj.build_model(self.num_classes)
+        model = obj.build_model(self.num_classes, freeze_backbone=False)
         state = torch.load(self.model_path, map_location=self.device, weights_only=True)
         model.load_state_dict(state)
         model.to(self.device)
@@ -46,17 +46,25 @@ class Predictor:
         logger.info("Model loaded successfully.")
         return model
 
+    import numpy as np  # Make sure this is imported at the top
+
     def process_audio(self, audio_path):
         logger.info(f"Processing audio: {audio_path}")
         audio, sr = librosa.load(audio_path, sr=22050, mono=True)
 
-        # Pad or trim to exactly 5 seconds so the tensor matches the trained model
+        # Pad or trim to exactly 5 seconds
         audio = librosa.util.fix_length(audio, size=22050 * 5)
 
         mel = librosa.feature.melspectrogram(y=audio, sr=sr, n_mels=128, fmin=500, fmax=8000)
         mel_db = librosa.power_to_db(mel, ref=np.max)
 
-        img = Image.fromarray(mel_db).convert('RGB')
+        # --- THE FIX: Normalize to 0-255 to match training data ---
+        mel_norm = ((mel_db - mel_db.min()) / (mel_db.max() - mel_db.min()) * 255).astype(np.uint8)
+
+        # Convert the normalized array to an image
+        img = Image.fromarray(mel_norm).convert('RGB')
+
+        # Transform for the model
         tensor = self.transform(img).unsqueeze(0).to(self.device)
         return tensor
 
