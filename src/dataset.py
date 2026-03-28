@@ -46,7 +46,7 @@ class BirdSoundDataset:
         self.val_labels = self.encode(self.val_paths)
         self.test_labels = self.encode(self.test_paths)
 
-    def build_and_save_index(self, index_path: Path):
+    def build_and_save_index(self, split_json_path: Path):
         data = {
             "train_paths": [str(p) for p in self.train_paths],
             "val_paths": [str(p) for p in self.val_paths],
@@ -56,7 +56,7 @@ class BirdSoundDataset:
             "test_labels": self.test_labels,
             "num_classes": int(self.num_classes),
         }
-        with open(index_path, "w", encoding="utf-8") as f:
+        with open(split_json_path, "w", encoding="utf-8") as f:
             json.dump(data, f)
 
     def data_frame(self):
