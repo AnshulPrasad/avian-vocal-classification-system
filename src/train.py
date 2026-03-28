@@ -32,8 +32,10 @@ class Train:
         self.best_val_acc = 0.0
 
     def train_one_epoch(self, epoch: int):
-        logger.info("Training epoch: %d/%d", epoch, self.epochs)
+        logger.info("Training epoch: %d / %d", epoch, self.epochs)
+
         self.model.train()
+
         total_loss=0.0
         for images, labels in self.train_loader:
             images, labels = images.to(self.device), labels.to(self.device)
@@ -42,12 +44,15 @@ class Train:
             loss.backward()
             self.optimizer.step()
             total_loss += loss.item()
+
         avg_loss = total_loss / len(self.train_loader)
         logger.info("Epoch %d | Train Loss: %.4f", epoch, avg_loss)
 
     def validate_one_epoch(self, epoch: int):
         logger.info("Validating epoch: %d", epoch)
+
         self.model.eval()
+
         correct, total = 0, 0
         class_correct = defaultdict(int)
         class_total = defaultdict(int)
@@ -62,6 +67,7 @@ class Train:
                     class_total[label.item()] += 1
                     if pred == label:
                         class_correct[label.item()] += 1
+
         val_acc = correct / total
         logger.info("Epoch %d | Val Acc: %.4f", epoch, val_acc)
 
@@ -74,14 +80,13 @@ class Train:
     def save_best_model(self, val_acc: float):
         if val_acc > self.best_val_acc:
             self.best_val_acc = val_acc
-            torch.save(self.model.state_dict(), f"{self.MODEL_PATH}")
+            torch.save(self.model.state_dict(), self.MODEL_PATH)
             logger.info("New best model saved | Val Acc: %.4f", val_acc)
 
     def train(self):
         logger.info("Training...")
-        for epoch in range(1, 1+self.epochs):
+        for epoch in range(1, 1 + self.epochs):
             self.train_one_epoch(epoch) # Training
             val_acc = self.validate_one_epoch(epoch) # Validation
             self.scheduler.step(val_acc)
             self.save_best_model(val_acc) # Save best model
-        logger.info("Trained")
