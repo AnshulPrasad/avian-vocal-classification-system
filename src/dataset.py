@@ -140,8 +140,8 @@ class BirdSoundDataset:
         for path in paths:
             id = path.stem.split('_')[-3]
             ids.append(id)
-        list_labels = ids_labels.reindex(ids, fill_value=-1).tolist()
-        return list_labels
+        labels = ids_labels.reindex(ids, fill_value=-1).tolist()
+        return labels
 
 class BirdSplitDataset(Dataset):
     def __init__(self, index_path, split="train", transform=None):
