@@ -14,9 +14,8 @@ class Preprocessor:
     def __init__(self, audio_path: Path):
         self.audio, self.sr = librosa.load(audio_path, sr=22050)
 
-    def resample_audio(self, target_sr=22050):
-        if self.orig_sr == target_sr:
     def resample_audio(self, target_sr = 22050):
+        if self.sr == target_sr:
             resampled = self.audio
             return resampled
         resampled = librosa.resample(self.audio, orig_sr=self.orig_sr, target_sr=target_sr)
