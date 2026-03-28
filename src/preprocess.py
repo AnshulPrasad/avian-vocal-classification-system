@@ -43,3 +43,10 @@ class Preprocessor:
     @staticmethod
     def save_audio(audio: np.ndarray, output_path: Path, sr: int = 22050):
         sf.write(output_path, audio, samplerate=sr)
+
+    def preprocess_audio(self):
+        resampled = self.resample_audio(self.sr)
+        mono = self.to_mono(resampled)
+        trimmed = self.trim_silence(mono)
+        chunks = self.chunk_audio(trimmed, self.sr, 5)
+        return chunks
