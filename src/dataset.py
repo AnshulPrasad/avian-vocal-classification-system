@@ -25,6 +25,12 @@ class BirdSoundDataset:
         self.df = self.id_label()
         self.valid_ids = set(self.df['id'].tolist())
         self.grouped_files_list = self.grouped_files()
+
+        # encode labels
+        self.le = LabelEncoder()
+        self.df['label'] = self.le.fit_transform(self.df['type'])
+        self.num_classes = len(set(self.df['label']))
+
         self.CLASS_MAPPING_JSON = class_mapping_json
 
         self.files = list(Path(self.SPECTROGRAM_DIR).rglob("*.png"))
@@ -125,20 +131,12 @@ class BirdSoundDataset:
         return paths_list
 
     def encode(self, paths):
-        df, unique_ids = self.id_label()
-
-        # encode labels
-        le = LabelEncoder()
-        df['label'] = le.fit_transform(df['type'])
-
-        self.num_classes = len(set(df['label']))
-
         # Save the mapping for Django
-        mapping_dict = {int(index): str(label) for index, label in enumerate(le.classes_)}
+        mapping_dict = {int(index): str(label) for index, label in enumerate(self.le.classes_)}
         with open('../models/class_mapping.json', 'w') as f:
             json.dump(mapping_dict, f)
 
-        ids_labels = df.set_index('id')['label']  # id → int label
+        ids_labels = self.df.set_index('id')['label']  # id → int label
         ids=[]
         for path in paths:
             id = path.stem.split('_')[-3]
