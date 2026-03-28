@@ -32,7 +32,7 @@ class BirdSoundDataset():
         self.val_labels = self.encode(self.val_paths)
         self.test_labels = self.encode(self.test_paths)
 
-    def build_and_save_index(self, index_path):
+    def build_and_save_index(self, index_path: Path):
         data = {
             "train_paths": [str(p) for p in self.train_paths],
             "val_paths": [str(p) for p in self.val_paths],
