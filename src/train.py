@@ -29,7 +29,7 @@ class Train:
             self.optimizer, mode='max', factor=0.5, patience=2, verbose=True
         )
         self.criterion = nn.CrossEntropyLoss()
-        self.best_val_acc = 0
+        self.best_val_acc = 0.0
 
     def train_one_epoch(self, epoch: int):
         logger.info("Training epoch: %d/%d", epoch, self.epochs)
