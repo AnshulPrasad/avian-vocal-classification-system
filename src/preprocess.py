@@ -25,8 +25,8 @@ class Preprocessor:
     def to_mono(audio: np.ndarray):
         if audio.ndim == 1:
             return audio
-        monoed = librosa.to_mono(audio)
-        return monoed
+        mono = librosa.to_mono(audio)
+        return mono
 
     @staticmethod
     def trim_silence(audio: np.ndarray):
