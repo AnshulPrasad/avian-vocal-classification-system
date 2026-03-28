@@ -84,8 +84,7 @@ class BirdSoundDataset():
         return unique_ids, labels_for_unique_ids
 
     def split_dataset(self, splits=(0.7, 0.15, 0.15)):
-        unique_ids, labels_for_unique_ids = self.stratify()
-        grouped_files = self.grouped_files()
+        unique_ids, labels_for_unique_ids = self.ids_and_labels()
 
         train_ids, temp_ids, _, temp_labels = train_test_split(
             unique_ids, labels_for_unique_ids,
