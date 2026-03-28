@@ -102,7 +102,7 @@ class BirdSoundDataset():
         )
 
         # copy files
-        _paths = []
+        paths_list = []
         for split_name, ids in [("train", train_ids), ("val", val_ids), ("test", test_ids)]:
             # freshly remake the folder
             output_path = self.SPLIT_DIR / split_name
@@ -117,11 +117,11 @@ class BirdSoundDataset():
                     file_path = output_path / f.name
                     paths.append(file_path)
                     shutil.copy(f, file_path)
-            _paths.append(paths)
+            paths_list.append(paths)
 
         logger.info("Split complete — train:%d val:%d test:%d recording IDs",
-                    len(_paths[0]), len(_paths[1]), len(_paths[2]))
-        return _paths
+                    len(paths_list[0]), len(paths_list[1]), len(paths_list[2]))
+        return paths_list
 
     def encode(self, paths):
         df, unique_ids = self.id_label()
