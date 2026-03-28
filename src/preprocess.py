@@ -18,7 +18,7 @@ class Preprocessor:
         if self.sr == target_sr:
             resampled = self.audio
             return resampled
-        resampled = librosa.resample(self.audio, orig_sr=self.orig_sr, target_sr=target_sr)
+        resampled = librosa.resample(self.audio, orig_sr=self.sr, target_sr=target_sr)
         return resampled
 
     @staticmethod
