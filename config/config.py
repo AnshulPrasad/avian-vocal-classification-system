@@ -18,6 +18,8 @@ MODEL_PATH =            PROJECT_ROOT / "models"  / "checkpoints"            / "b
 CONFUSION_MATRIX_PATH = PROJECT_ROOT / "outputs" / "confusion_matrix.png"
 SPLIT_JSON_PATH =       PROJECT_ROOT / "models"  / "split_index.json"
 CLASS_MAPPING_JSON =    PROJECT_ROOT / "models"  / "class_mapping.json"
+LOG_DIR =               PROJECT_ROOT / "logs"
 
-for p in [RAW_DIR, PROCESSED_DIR, SPECTROGRAM_DIR, SPLIT_DIR, MODEL_PATH, CONFUSION_MATRIX_PATH, SPLIT_JSON_PATH, CLASS_MAPPING_JSON]:
+for p in [RAW_DIR, PROCESSED_DIR, SPECTROGRAM_DIR, SPLIT_DIR, MODEL_PATH,\
+          CONFUSION_MATRIX_PATH, SPLIT_JSON_PATH, CLASS_MAPPING_JSON, LOG_DIR]:
     p.mkdir(parents=True, exist_ok=True)
