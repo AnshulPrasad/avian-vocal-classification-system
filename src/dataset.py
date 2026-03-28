@@ -17,10 +17,15 @@ from logger import get_logger
 logger = get_logger(__name__, 'dataset.log')
 
 class BirdSoundDataset():
-    def __init__(self, SPLIT_DIR, RAW_DIR, SPECTROGRAM_DIR, transform=None):
-        self.SPLIT_DIR = SPLIT_DIR
-        self.RAW_DIR = RAW_DIR
-        self.SPECTROGRAM_DIR = SPECTROGRAM_DIR
+    def __init__(self, split_dir: Path, raw_dir: Path, spectrogram_dir: Path):
+        self.SPLIT_DIR = split_dir
+        self.RAW_DIR = raw_dir
+        self.SPECTROGRAM_DIR = spectrogram_dir
+
+        self.df = self.id_label()
+        self.valid_ids = set(self.df['id'].tolist())
+        self.grouped_files_list = self.grouped_files()
+
         self.files = list(Path(self.SPECTROGRAM_DIR).rglob("*.png"))
         self.train_paths, self.val_paths, self.test_paths = self.split_dataset()
         self.train_labels = self.encode(self.train_paths)
