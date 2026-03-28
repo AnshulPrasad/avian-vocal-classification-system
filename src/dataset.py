@@ -21,6 +21,7 @@ class BirdSoundDataset:
         self.SPLIT_DIR = split_dir
         self.RAW_DIR = raw_dir
         self.SPECTROGRAM_DIR = spectrogram_dir
+        self.CLASS_MAPPING_JSON = class_mapping_json
 
         self.df = self.id_label()
         self.valid_ids = set(self.df['id'].tolist())
