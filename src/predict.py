@@ -54,7 +54,7 @@ class Predictor:
         # Pad or trim to exactly 5 seconds
         audio = librosa.util.fix_length(audio, size=22050 * 5)
 
-        mel = librosa.feature.melspectrogram(y=audio, sr=sr, n_mels=128, fmin=500, fmax=8000)
+        mel = librosa.feature.melspectrogram(y=audio, sr=sr, n_mels=128, hop_length=512, fmin=500, fmax=8000)
         mel_db = librosa.power_to_db(mel, ref=np.max)
 
         # --- THE FIX: Normalize to 0-255 to match training data ---
