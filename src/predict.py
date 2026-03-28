@@ -6,9 +6,9 @@
 import json
 import torch
 import librosa
-import numpy as np
 from torchvision import transforms
 from PIL import Image
+import numpy as np
 from model import Model
 from logger import get_logger
 logger = get_logger(__name__, 'predict.log')
@@ -46,7 +46,6 @@ class Predictor:
         logger.info("Model loaded successfully.")
         return model
 
-    import numpy as np  # Make sure this is imported at the top
 
     def process_audio(self, audio_path):
         logger.info(f"Processing audio: {audio_path}")
