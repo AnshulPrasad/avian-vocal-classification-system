@@ -52,8 +52,8 @@ def preprocess():
 
                 # save the chunks of the audio file in the folder (if not saved)
                 for i, chunk in enumerate(chunks):
-                    file_path =  f"{audio_path.stem}_chunk{i}".with_suffix(".wav")
-                    output_path = folder_path / file_path
+                    file_name =  f"{audio_path.stem}_chunk{i}".with_suffix(".wav")
+                    output_path = folder_path / file_name
                     if output_path.exists():
                         logger.info("Already exist: %s", output_path)
                         continue
