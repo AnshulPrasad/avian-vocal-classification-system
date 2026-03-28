@@ -1,6 +1,6 @@
 import librosa
 import numpy as np
-import matplotlib.pyplot as plt
+from PIL import Image
 
 from logger import get_logger
 logger = get_logger(__name__, 'features.log')
@@ -30,9 +30,8 @@ class FeatureExtractor ():
         return mel_db
 
     def save_spectrogram(self, spectrogram, path, hop_length=512, x_axis="time", y_axis="mel"):
-        plt.figure(figsize=(8,3))
-        librosa.display.specshow(spectrogram, sr=22050, hop_length=hop_length, x_axis=x_axis, y_axis=y_axis)
-        plt.colorbar(format='%+2.0f dB')
-        plt.tight_layout()
-        plt.savefig(path, dpi=150)
-        plt.close()
+        # Normalize to 0-255
+        mel_norm = ((spectrogram - spectrogram.min()) /
+                    (spectrogram.max() - spectrogram.min()) * 255).astype(np.uint8)
+        img = Image.fromarray(mel_norm).convert('RGB')
+        img.save(path)
