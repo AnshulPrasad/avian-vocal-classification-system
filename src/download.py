@@ -83,17 +83,14 @@ class Species:
         }
 
     def download_audio(self, metadata):
-        try:
-            file_name = f"{self.english_name}_{metadata['id']}.mp3"
-            if os.path.isfile(f"{self.RAW_DIR}/{self.english_name}_mp3/{file_name}"): # Skip already downloaded audio files
-                logger.info("File %s already exists", file_name)
-                return
-            response = requests.get(metadata['file'], stream=True, timeout=30)  # download
-            with open(f"{self.RAW_DIR}/{self.english_name}_mp3/{file_name}", 'wb') as f:  # save
-                f.write(response.content)
-                logger.info('Downloaded: %s', file_name)
-        except Exception as e:
-            logger.warning("❌ Failed %s: %s", metadata['id'], e)
+        file_name = f"{self.english_name}_{metadata['id']}.mp3"
+        if os.path.isfile(f"{self.RAW_DIR}/{self.english_name}_mp3/{file_name}"): # Skip already downloaded audio files
+            logger.info("File %s already exists", file_name)
+            return
+        response = requests.get(metadata['file'], stream=True, timeout=30)  # download
+        with open(f"{self.RAW_DIR}/{self.english_name}_mp3/{file_name}", 'wb') as f:  # save
+            f.write(response.content)
+            logger.info('Downloaded: %s', file_name)
 
     def write_csv(self, records: list):
         with open(f'{self.RAW_DIR}/{self.english_name}.csv', 'w', encoding='utf-8', newline='') as f: # Write information in .csv file
