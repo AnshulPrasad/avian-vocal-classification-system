@@ -11,10 +11,9 @@ from logger import get_logger
 from pathlib import Path
 logger = get_logger(__name__, 'features.log')
 
-
-    def __init__(self, audio, original_sr):
-        self.audio = audio
-        self.original_sr = original_sr
+class FeatureExtractor:
+    def __init__(self, audio_path: Path):
+        self.audio, self.sr = librosa.load(audio_path, sr=22050)
 
     def augment_audio(self, sr=22050):
         stretched = librosa.effects.time_stretch(self.audio, rate= np.random.uniform(0.8,1.2)) # time stretched
