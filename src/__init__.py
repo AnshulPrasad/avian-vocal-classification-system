@@ -74,9 +74,8 @@ def feature_extraction():
         for audio_path in processed_folder.glob("*.wav"):
 
             # feature extraction from an audio file
-            audio, sr = librosa.load(audio_path, sr=22050)
-            obj = FeatureExtractor(audio, sr)
-            stretched, pitched, noisy = obj.augment_audio()
+            obj = FeatureExtractor(audio_path)
+            audio, stretched, pitched, noisy = obj.augment_audio()
 
             # store all the versions(audio, stretched, pitched, noisy) of the audio file
             for audio_version, version_name in zip([audio, stretched, pitched, noisy], ['audio', 'stretched', 'pitched', 'noisy']):
