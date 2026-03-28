@@ -27,15 +27,10 @@ MODEL_PATH = config["MODEL_PATH"]
 CONFUSION_MATRIX_PATH = config["CONFUSION_MATRIX_PATH"]
 
 def download():
-    logger.info("Downloading data")
-    for sci_name, common_name in SPECIES_LIST:
-        try:
-            obj = Species(sci_name, RAW_DIR)
-            obj.download()
-        except ValueError as e:
-            logger.warning("Skipping %s: %s", common_name, e)
-        except Exception as e:
-            logger.error("Unexpected error for %s: %s", common_name, e)
+    logger.info("Downloading data...")
+    for sci_name, common_name in SPECIES_LIST: # remove common_name: no use
+        obj = Species(sci_name, RAW_DIR)
+        obj.download()
 
 def preprocess():
     logger.info("Preprocessing data")
