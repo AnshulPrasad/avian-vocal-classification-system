@@ -94,9 +94,9 @@ class Species:
 
     def write_csv(self, records: list):
         with open(f'{self.RAW_DIR}/{self.english_name}.csv', 'w', encoding='utf-8', newline='') as f: # Write information in .csv file
-            writer = csv.DictWriter(f, fieldnames=self.rows[0].keys())
+            writer = csv.DictWriter(f, fieldnames=records[0].keys())
             writer.writeheader()
-            writer.writerows(self.rows)
+            writer.writerows(records)
 
     def download(self):
         os.makedirs(f"{self.RAW_DIR}/{self.english_name}_mp3", exist_ok=True) # sub-directory for each species to avoid clutter
