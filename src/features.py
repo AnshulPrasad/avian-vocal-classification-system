@@ -1,3 +1,9 @@
+# Responsibilities:
+# - Generate mel spectrograms from processed WAVs
+# - Apply augmentation (noise, pitch shift, time stretch)
+# - Save spectrograms as PNGs to data/spectrograms/
+# - Split into train/val/test
+
 import librosa
 import numpy as np
 from PIL import Image
