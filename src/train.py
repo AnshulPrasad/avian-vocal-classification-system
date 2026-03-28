@@ -11,7 +11,7 @@ from collections import defaultdict
 logger = get_logger(__name__, 'train.log')
 
 class Train:
-    def __init__(self, model, train_loader, val_loader, MODEL_PATH, epochs=50, lr=1e-4):
+    def __init__(self, model: Model, train_loader:DataLoader, val_loader:DataLoader, model_path: Path, epochs: int=50, lr: float=1e-4):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.model = model.to(self.device)
         self.train_loader = train_loader
@@ -26,7 +26,7 @@ class Train:
         self.criterion = nn.CrossEntropyLoss()
         self.best_val_acc = 0
 
-    def train_one_epoch(self, epoch):
+    def train_one_epoch(self, epoch: int):
         logger.info("Training epoch: %d/%d", epoch, self.epochs)
         self.model.train()
         total_loss=0.0
@@ -40,7 +40,7 @@ class Train:
         avg_loss = total_loss / len(self.train_loader)
         logger.info("Epoch %d | Train Loss: %.4f", epoch, avg_loss)
 
-    def validate_one_epoch(self, epoch):
+    def validate_one_epoch(self, epoch: int):
         logger.info("Validating epoch: %d", epoch)
         self.model.eval()
         correct, total = 0, 0
@@ -66,7 +66,7 @@ class Train:
 
         return val_acc
 
-    def save_best_model(self, val_acc):
+    def save_best_model(self, val_acc: float):
         if val_acc > self.best_val_acc:
             self.best_val_acc = val_acc
             torch.save(self.model.state_dict(), f"{self.MODEL_PATH}")
