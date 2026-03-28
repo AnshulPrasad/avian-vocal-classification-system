@@ -69,8 +69,6 @@ class BirdSoundDataset():
         return df
 
     def grouped_files(self):
-        _, valid_ids = self.id_label()
-
         # group by audio ids to avoid data leakage
         grouped_files = defaultdict(list)
         for f in self.files:
