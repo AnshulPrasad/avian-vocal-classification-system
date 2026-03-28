@@ -82,7 +82,7 @@ class Species:
             'smp': record.get('smp', None),
         }
 
-    def download_audio(self, metadata):
+    def download_audio(self, metadata: dict):
         file_name = f"{self.english_name}_{metadata['id']}.mp3"
         if os.path.isfile(f"{self.RAW_DIR}/{self.english_name}_mp3/{file_name}"): # Skip already downloaded audio files
             logger.info("File %s already exists", file_name)
