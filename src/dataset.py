@@ -33,7 +33,11 @@ class BirdSoundDataset:
         self.df['label'] = le.fit_transform(self.df['type'])
         self.num_classes = len(set(self.df['label']))
 
-        self.CLASS_MAPPING_JSON = class_mapping_json
+
+        # Save the mapping for Django
+        mapping_dict = {int(index): str(label) for index, label in enumerate(le.classes_)}
+        with open(self.CLASS_MAPPING_JSON, 'w') as f:
+            json.dump(mapping_dict, f)
 
         self.files = list(Path(self.SPECTROGRAM_DIR).rglob("*.png"))
         self.train_paths, self.val_paths, self.test_paths = self.split_dataset()
@@ -133,11 +137,6 @@ class BirdSoundDataset:
         return paths_list
 
     def encode(self, paths):
-        # Save the mapping for Django
-        mapping_dict = {int(index): str(label) for index, label in enumerate(self.le.classes_)}
-        with open('../models/class_mapping.json', 'w') as f:
-            json.dump(mapping_dict, f)
-
         ids_labels = self.df.set_index('id')['label']  # id → int label
         ids=[]
         for path in paths:
