@@ -105,7 +105,7 @@ class BirdSoundDataset():
         _paths = []
         for split_name, ids in [("train", train_ids), ("val", val_ids), ("test", test_ids)]:
             # freshly remake the folder
-            output_path = Path(self.SPLIT_DIR) / split_name
+            output_path = self.SPLIT_DIR / split_name
             if output_path.exists():
                 shutil.rmtree(output_path)
             output_path.mkdir(parents=True, exist_ok=True)
