@@ -11,9 +11,11 @@ class Model:
 
     def build_model(self, num_classes: int, freeze_backbone: bool=True):
         model = models.efficientnet_b0(weights='IMAGENET1K_V1')
+
         if freeze_backbone:
             for param in model.features.parameters():
                 param.requires_grad = False  # freeze backbone
+
         num_features = model.classifier[1].in_features
         model.classifier = nn.Sequential(
             nn.Dropout(p=0.3),  # lower dropout when only training classifier
