@@ -46,7 +46,7 @@ class BirdSoundDataset():
             json.dump(data, f)
 
     def id_label(self):
-        # build recording_id → label mapping from CSVs
+        # concatenate all csvs and convert ids from int to str
         dfs = [pd.read_csv(f, usecols=['id', 'type']) for f in sorted(Path(self.RAW_DIR).glob("*.csv"))]
         df = pd.concat(dfs,ignore_index=True)
         df['id'] = df['id'].astype(str)
