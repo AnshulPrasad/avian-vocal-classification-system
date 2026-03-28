@@ -1,8 +1,8 @@
 import csv
 import requests
 import os
-import time
 from dotenv import load_dotenv
+from pathlib import Path
 from logger import get_logger
 logger = get_logger(__name__, 'download.log')
 
