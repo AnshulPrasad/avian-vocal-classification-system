@@ -117,9 +117,9 @@ def evaluate(test_loader, num_classes):
 
 
 if __name__ == "__main__":
-    # download()
-    # preprocess()
-    # feature_extraction()
+    download()
+    preprocess()
+    feature_extraction()
     builder = BirdSoundDataset(SPLIT_DIR, RAW_DIR, SPECTROGRAM_DIR)
     builder.build_and_save_index("../models/split_index.json")
     train_loader, train_dataset = dataset('train')
