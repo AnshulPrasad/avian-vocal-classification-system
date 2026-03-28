@@ -7,6 +7,7 @@
 import torch
 import torch.nn as nn
 from logger import get_logger
+from collections import defaultdict
 logger = get_logger(__name__, 'train.log')
 
 class Train:
@@ -43,15 +44,26 @@ class Train:
         logger.info("Validating epoch: %d", epoch)
         self.model.eval()
         correct, total = 0, 0
+        class_correct = defaultdict(int)
+        class_total = defaultdict(int)
         with torch.no_grad():
             for images, labels in self.val_loader:
                 images, labels = images.to(self.device), labels.to(self.device)
                 preds = self.model(images).argmax(dim=1)
                 correct += (preds == labels).sum().item()
                 total += labels.size(0)
+
+                for pred, label in zip(preds.cpu(), labels.cpu()):
+                    class_total[label.item()] += 1
+                    if pred == label:
+                        class_correct[label.item()] += 1
         val_acc = correct / total
         logger.info("Epoch %d | Val Acc: %.4f", epoch, val_acc)
-        logger.info("Validated epoch: %d", epoch)
+
+        for cls in sorted(class_total):
+            acc = class_correct[cls] / class_total[cls]
+            logger.info("Class %d | Acc: %.4f (%d samples)", cls, acc, class_total[cls])
+
         return val_acc
 
     def save_best_model(self, val_acc):
