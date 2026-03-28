@@ -25,6 +25,7 @@ class BirdSoundDataset:
         self.df = self.id_label()
         self.valid_ids = set(self.df['id'].tolist())
         self.grouped_files_list = self.grouped_files()
+        self.CLASS_MAPPING_JSON = class_mapping_json
 
         self.files = list(Path(self.SPECTROGRAM_DIR).rglob("*.png"))
         self.train_paths, self.val_paths, self.test_paths = self.split_dataset()
