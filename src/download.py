@@ -13,21 +13,12 @@ if not API_KEY:
     raise ValueError("XENO_CANTO_API_KEY is not set")
 
 class Species:
-    """
-    Download a species recordings from xeno-canto website
-    and save it in the output directory and corresponding csv file
-    """
-    def __init__(self, species, RAW_DIR):
-        self.species = species # species name can be found on xeno-canto website
-        self.RAW_DIR = RAW_DIR
-        self.base_url= f'https://xeno-canto.org/api/3/recordings?query=sp:"{self.species}"&key={API_KEY}'
-        with requests.get(self.base_url) as r:
+    def __init__(self, species: str, raw_dir: Path):
+        self.RAW_DIR = raw_dir
+        self.base_url= f'https://xeno-canto.org/api/3/recordings?query=sp:"{species}"&key={API_KEY}'
+        with requests.get(self.base_url) as r: # get all metadata
             self.data = r.json()
-        if not self.data.get('recordings'):
-            raise ValueError("No recordings found for %s", self.species)
-        self.english_name = '_'.join(self.data['recordings'][0]['en'].replace('-', ' ').split(' '))
-        self.pages = self.data['numPages']
-        self.rows = []
+        self.english_name = '_'.join(self.data["recordings"][0]['en'].replace('-', ' ').split(' '))
 
     def page_recordings(self, page): # get metadata of all recordings in the page
         page_url = self.base_url + '&page=' + str(page)
