@@ -1,7 +1,6 @@
 .venv
 data
 logs
-models
 outputs
 .idea
 pyproject.toml
