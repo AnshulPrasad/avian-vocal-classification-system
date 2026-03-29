@@ -7,3 +7,4 @@ pyproject.toml
 uv.lock
 .env
 *.sqlite3
+staticfiles
