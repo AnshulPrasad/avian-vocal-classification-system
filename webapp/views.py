@@ -23,7 +23,7 @@ model_path = hf_hub_download(
 
 # Initialize the model globally (using absolute paths to be safe)
 PREDICTOR = Predictor(
-    model_path=os.path.join(settings.BASE_DIR, "models", "checkpoints", "best_model.pth"),
+    model_path=model_path,
     mapping_path=os.path.join(settings.BASE_DIR, "models", "class_mapping.json")
 )
 
