@@ -1,30 +1,36 @@
-# Use an official Python runtime as a base image
-FROM python:3.10-slim
+# Use a lightweight Python image
+FROM python:3.12-slim
+
+# System dependencies for audio processing (Librosa/SoundFile)
+RUN apt-get update && apt-get install -y \
+    libsndfile1 \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    HOME=/home/user
 
-# Create a non-root user for security (HF requirement)
+# Create a non-root user (Hugging Face requirement)
 RUN useradd -m -u 1000 user
 USER user
-ENV HOME=/home/user \
-    PATH=/home/user/.local/bin:$PATH
-
-# Set the working directory
+ENV PATH="/home/user/.local/bin:$PATH"
 WORKDIR $HOME/app
 
-# Copy requirements and install
+# 1. Install dependencies first (for better caching)
 COPY --chown=user requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install CPU-specific torch to save massive amounts of time/space
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of your Django project
+# 2. Copy the rest of the app
 COPY --chown=user . .
 
-# Expose port 7860 (Hugging Face's default port)
+# Expose the HF default port
 EXPOSE 7860
 
-# Run migrations and start the server using Gunicorn
-# Replace 'myproject' with the folder name containing your wsgi.py
+# Run migrations, collect static files, and start Gunicorn
 CMD python manage.py migrate && \
-    gunicorn config.wsgi:application --bind 0.0.0.0:7860
+    python manage.py collectstatic --no-input && \
+    gunicorn config.wsgi:application --bind 0.0.0.0:7860 --timeout 120
