@@ -2,6 +2,7 @@ import os
 import sys
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
+from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 
 # --- CRITICAL PATH FIX ---
@@ -20,7 +21,7 @@ PREDICTOR = Predictor(
     mapping_path=os.path.join(settings.PROJECT_ROOT, "models", "class_mapping.json")
 )
 
-
+@csrf_exempt
 def upload_and_predict(request):
     if request.method == 'POST' and request.FILES.get('audio_file'):
         uploaded_file = request.FILES['audio_file']
