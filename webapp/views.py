@@ -7,7 +7,7 @@ from django.conf import settings
 # --- CRITICAL PATH FIX ---
 # This tells Python to look inside your 'src' folder for imports,
 # completely fixing the "ModuleNotFoundError" you saw earlier.
-SRC_DIR = os.path.join(settings.BASE_DIR, 'src')
+SRC_DIR = os.path.join(settings.PROJECT_ROOT, 'src')
 if SRC_DIR not in sys.path:
     sys.path.append(SRC_DIR)
 
@@ -17,7 +17,7 @@ from src.predict import Predictor
 # Initialize the model globally (using absolute paths to be safe)
 PREDICTOR = Predictor(
     model_path="models/checkpoints/best_model.pth",
-    mapping_path=os.path.join(settings.BASE_DIR, "models", "class_mapping.json")
+    mapping_path=os.path.join(settings.PROJECT_ROOT, "models", "class_mapping.json")
 )
 
 
